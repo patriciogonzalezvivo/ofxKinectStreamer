@@ -7,11 +7,8 @@
 #include "ofxOsc.h"
 
 #define FAKEKINECT
-#ifndef FAKEKINECT
-#include "ofxKinect.h"
-#endif
 
-#include "FrameSender.h"
+#include "ofxKinectStreamer.h"
 
 class testApp : public ofBaseApp{
 public:
@@ -30,9 +27,9 @@ public:
 	void exit();
 	
 private:
-    FrameSender* frameSender;   //  needs to be a pointer as FrameSender 
-                                //  uses POCO classes with private constructors, 
-                                //  and then can't be copied
+    ofxKinectServer *frameSender;     //  needs to be a pointer as FrameSender 
+                                        //  uses POCO classes with private constructors, 
+                                        //  and then can't be copied
     
     ofxOscReceiver  oscReceiver;
     

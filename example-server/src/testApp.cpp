@@ -69,7 +69,7 @@ void testApp::setup(){
     fbo.end();
     
 	//setup server
-	frameSender = new FrameSender(11999, width, height);
+	frameSender = new ofxKinectServer(11999, width, height);
     frameSender->setPixelsSrc( pixels );
 	frameSender->start();
     
