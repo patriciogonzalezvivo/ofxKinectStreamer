@@ -36,7 +36,7 @@ void testApp::setup(){
     fbo.end();
 	
 	//setup client
-	frameReceiver = new FrameReceiver("127.0.0.1", 11999, 320,240);
+	frameReceiver = new ofxKinectClient("127.0.0.1", 11999, 320,240);
 	frameReceiver->start();
     
     ofSetWindowShape(width, height);
@@ -45,7 +45,7 @@ void testApp::setup(){
 //--------------------------------------------------------------
 void testApp::update(){
 	//get frame
-	if(frameReceiver->estaConectado()){
+	if(frameReceiver->isConnected()){
 		frameReceiver->readFrame( texture );
         
         fbo.begin();

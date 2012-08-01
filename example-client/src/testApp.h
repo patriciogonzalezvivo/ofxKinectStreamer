@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxNetwork.h"
-#include "FrameReceiver.h"
+#include "ofxKinectStreamer.h"
 
 //Globally known constants
 #define CAM1_WIDTH 640
@@ -33,7 +33,7 @@ private:
     int cam1ByteSize;
     int cam2ByteSize;
 	
-    FrameReceiver* frameReceiver;	
+    ofxKinectClient* frameReceiver;	
     
     ofTexture   texture;
     ofFbo       fbo;
