@@ -35,6 +35,18 @@ public:
 	ofxKinectClient(string ip, int port, int frameWidth, int frameHeight);
 	~ofxKinectClient();
 	
+    void    setDepthClipping(float nearClip=500, float farClip=4000);
+    bool    setCameraTiltAngle(float angleInDegrees);
+    
+	float   getNearClipping();
+	float   getFarClipping();
+	float   getCurrentCameraTiltAngle();
+	float   getTargetCameraTiltAngle();
+	float   getDistanceAt(int x, int y);
+	float   getDistanceAt(const ofPoint & p);
+	ofVec3f getWorldCoordinateAt(int cx, int cy);
+	ofVec3f getWorldCoordinateAt(float cx, float cy, float wz);
+    
     bool    isConnected(){return client.isConnected();};
     
 	void    start(){activity.start();};
@@ -53,6 +65,7 @@ private:
     ofTexture       texture;
     ofFbo           fbo;
     ofShader        shader;
+    ofFloatPixels   floatPixels;
     
     string ip;
     

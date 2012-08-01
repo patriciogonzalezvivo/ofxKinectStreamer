@@ -83,7 +83,36 @@ void ofxKinectClient::update() {
         shader.end();
         
         fbo.end();
+        
+        fbo.getTextureReference().readToPixels(floatPixels);
 	}
+}
+
+//------------------------------------
+float ofxKinectClient::getDistanceAt(int x, int y) {
+	//  TODO: take near and far points to map the ofFloatPixels 
+    //  and send it back to the freenect_camera_to_world
+    
+    //  return depthPixelsRaw[y * width + x];
+    
+    return -1.0 ;
+}
+
+//------------------------------------
+float ofxKinectClient::getDistanceAt(const ofPoint & p) {
+	return getDistanceAt(p.x, p.y);
+}
+
+//------------------------------------
+ofVec3f ofxKinectClient::getWorldCoordinateAt(int x, int y) {
+	return getWorldCoordinateAt(x, y, getDistanceAt(x, y));
+}
+
+//------------------------------------
+ofVec3f ofxKinectClient::getWorldCoordinateAt(float cx, float cy, float wz) {
+	double wx, wy;
+	//freenect_camera_to_world(kinectDevice, cx, cy, wz, &wx, &wy);
+	return ofVec3f(wx, wy, wz);
 }
 
 void ofxKinectClient::runActivity() {

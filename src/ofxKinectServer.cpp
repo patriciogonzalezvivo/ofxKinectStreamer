@@ -116,7 +116,6 @@ void ofxKinectServer::update(){
         fbo.end();
         
         fbo.getTextureReference().readToPixels( pixels );
-        //frameSender->updateFrame( pixels );
     }
 #else
     kinect.update();
