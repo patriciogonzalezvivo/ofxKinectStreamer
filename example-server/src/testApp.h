@@ -2,7 +2,6 @@
 
 #include "ofMain.h"
 
-#include "ofxOpenCv.h"
 #include "ofxNetwork.h"
 #include "ofxGui.h"
 #include "ofxOsc.h"

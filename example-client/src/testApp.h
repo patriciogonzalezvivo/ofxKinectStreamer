@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxOpenCv.h"
 #include "ofxNetwork.h"
 #include "FrameReceiver.h"
 
@@ -31,12 +30,8 @@ public:
     void exit();
 	
 private:
-    ofxCvColorImage frame;
-	
     int cam1ByteSize;
     int cam2ByteSize;
-	
-    ofxCvColorImage receivedFrame;
 	
     FrameReceiver* frameReceiver;	
     

@@ -35,8 +35,6 @@ void testApp::setup(){
     ofClear(0);
     fbo.end();
 	
-    receivedFrame.allocate(width,height);
-    
 	//setup client
 	frameReceiver = new FrameReceiver("127.0.0.1", 11999, 320,240);
 	frameReceiver->start();

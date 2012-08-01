@@ -1,7 +1,4 @@
 ofxGui
-ofxKinect
+ofxKinectStreamer
 ofxNetwork
-ofxOpenCv
 ofxOsc
-ofxStream
-ofxThread
