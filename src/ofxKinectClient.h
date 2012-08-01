@@ -10,6 +10,7 @@
 using std::string;
 
 #include "ofMain.h"
+#include "ofxNetwork.h"
 
 //  Kinect stuff
 #include "ofxBase3DVideo.h"
@@ -17,7 +18,6 @@ using std::string;
 //  Streamming stuff
 #include "Poco/Activity.h"
 #include "Poco/RWLock.h"
-#include "ofxNetwork.h"
 
 #define DEFAULT_IP "127.0.0.1"
 #define DEFAULT_PORT 11999
@@ -35,29 +35,29 @@ public:
 	ofxKinectClient(string ip, int port, int frameWidth, int frameHeight);
 	~ofxKinectClient();
 	
-	void start();
-	void stop();
-	bool isConnected();
+    bool    isConnected(){return client.isConnected();};
+    
+	void    start(){activity.start();};
+	void    stop(){activity.stop();};
 	
-	/**
-		Writes into the received frame the pixels received over TCP.
-	 */
-    void readFrame(ofTexture & texture);
-	
+    void    update();
+	void    draw(int _x = 0, int _y = 0);
+    
 private:
-	Poco::Activity<ofxKinectClient> activity;
+    void runActivity(); //the main thread function
+	
+    Poco::Activity<ofxKinectClient> activity;
 	Poco::RWLock rwlock;
 	
-	ofxTCPClient client;
-	string ip;
-	int port;
-	
-	char* pixels;
-	int frameWidth;
-	int frameHeight;
-	int frameSize;
-	
-	void runActivity(); //the main thread function
+	ofxTCPClient    client;
+    ofTexture       texture;
+    ofFbo           fbo;
+    ofShader        shader;
+    
+    string ip;
+    
+    int             width, height, port, size;
+    char            *pixels;
 };
 
 #endif

@@ -10,7 +10,6 @@
 
 #define FAKEKINECT
 
-
 #include <stdexcept>
 using std::length_error;
 

@@ -13,14 +13,40 @@ ofxKinectClient::ofxKinectClient() : activity(this, &ofxKinectClient::runActivit
 	ofxKinectClient(DEFAULT_IP, DEFAULT_PORT, RECEIVER_FRAME_WIDTH, RECEIVER_FRAME_HEIGHT);
 }
 
-ofxKinectClient::ofxKinectClient(string ip, int port, int frameWidth, int frameHeight) : activity(this, &ofxKinectClient::runActivity) {
-	this->ip = ip;
-	this->port = port;
-	this->frameWidth = frameWidth;
-	this->frameHeight = frameHeight;
-	this->frameSize = frameWidth * frameHeight * 3;
+ofxKinectClient::ofxKinectClient(string _ip, int _port, int _width, int _height) : activity(this, &ofxKinectClient::runActivity) {
+	this->ip = _ip;
+	this->port = _port;
+	this->width = _width;
+	this->height = _height;
+	this->size = _width * _height * 3;
 	
-	pixels = new char[frameSize];
+	pixels = new char[size];
+    string shaderProgram = "#version 120\n \
+    #extension GL_ARB_texture_rectangle : enable\n \
+    \
+    uniform sampler2DRect tex;\
+    \
+    void main (void){\
+    vec2 pos = gl_TexCoord[0].st;\
+    \
+    vec3 src = texture2DRect(tex, pos).rgb;\
+    \
+    float clampFactor = 1.0/3.0;\
+    \
+    float depth = 0.0;\
+    \
+    depth = src.r*clampFactor + src.g*clampFactor + src.b*clampFactor;\
+    \
+    gl_FragColor = vec4( depth, depth, depth , 1.0);\
+    }";
+    shader.setupShaderFromSource(GL_FRAGMENT_SHADER, shaderProgram);
+    shader.linkProgram(); 
+    
+    texture.allocate(width, height, GL_RGB);
+    fbo.allocate(width, height, GL_RGB);
+    fbo.begin();
+    ofClear(0);
+    fbo.end();
 	
 	cout << "try to initialize receiver" << endl;
 	
@@ -34,28 +60,32 @@ ofxKinectClient::~ofxKinectClient() {
 	delete [] pixels;
 }
 
-void ofxKinectClient::start() {
-	activity.start();
-}
-
-void ofxKinectClient::stop() {
-	activity.stop();
-}
-
-void ofxKinectClient::readFrame(ofTexture & texture) {
-	if (texture.getWidth() < frameWidth || texture.getHeight() < frameHeight) {
-		throw length_error("ofxKinectClient::readFrame: Frame size is bigger than the size of the buffer.");
+void ofxKinectClient::update() {
+    if (isConnected()){
+        
+        if (rwlock.tryReadLock()) {
+            texture.loadData((unsigned char*)pixels, width, height, GL_RGB);
+            rwlock.unlock();
+        }
+        
+        fbo.begin();
+        ofClear(0);
+        ofSetColor(255);
+        
+        shader.begin();
+        shader.setUniformTexture("tex", texture, 0);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0, 0); glVertex3f(0, 0, 0);
+        glTexCoord2f(width, 0); glVertex3f(width, 0, 0);
+        glTexCoord2f(width, height); glVertex3f(width, height, 0);
+        glTexCoord2f(0,height);  glVertex3f(0,height, 0);
+        glEnd();
+        shader.end();
+        
+        fbo.end();
 	}
-	
-	if (rwlock.tryReadLock()) {
-        texture.loadData((unsigned char*)pixels, frameWidth, frameHeight, GL_RGB);
-		rwlock.unlock();
-	}
 }
 
-bool ofxKinectClient::isConnected(){
-	return client.isConnected();
-}
 void ofxKinectClient::runActivity() {
 	while (!activity.isStopped()) {
 		if (client.isConnected()) {
@@ -63,9 +93,9 @@ void ofxKinectClient::runActivity() {
 			if (rwlock.tryWriteLock()) {
 				//Receiving loop that must ensure a frame is received as a whole
 				char* receivePos = pixels;
-				int length = frameWidth * 3;
+				int length = width * 3;
 				int totalReceivedBytes = 0;
-				while (totalReceivedBytes < frameSize) {
+				while (totalReceivedBytes < size) {
 					int receivedBytes = client.receiveRawBytes(receivePos, length); //returns received bytes
 					totalReceivedBytes += receivedBytes;
 					receivePos += receivedBytes;
@@ -77,7 +107,11 @@ void ofxKinectClient::runActivity() {
 		else {
 			cout << "NOT connected to server" << endl;
 		}
-
+        
 		ofSleepMillis(RECEIVER_ACTIVITY_SLEEP);
 	}
+}
+
+void ofxKinectClient::draw(int _x, int _y){
+    fbo.draw(_x,_y);
 }
