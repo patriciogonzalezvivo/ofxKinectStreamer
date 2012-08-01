@@ -4,17 +4,17 @@
 	@author: Jan Christian Hjorth Hansen - rocknrolldk@gmail.com
  */
 
-#include "FrameSender.h"
+#include "ofxKinectServer.h"
 
 #include <cstdio>
 using std::cout;
 using std::endl;
 
-FrameSender::FrameSender() : activity(this, &FrameSender::runActivity) {
-	FrameSender(DEFAULT_PORT, SENDER_FRAME_WIDTH, SENDER_FRAME_HEIGHT);
+ofxKinectServer::ofxKinectServer() : activity(this, &ofxKinectServer::runActivity) {
+	ofxKinectServer(DEFAULT_PORT, SENDER_FRAME_WIDTH, SENDER_FRAME_HEIGHT);
 }
 
-FrameSender::FrameSender(int port, int frameWidth, int frameHeight) : activity(this, &FrameSender::runActivity) {
+ofxKinectServer::ofxKinectServer(int port, int frameWidth, int frameHeight) : activity(this, &ofxKinectServer::runActivity) {
 	this->port = port;
 	this->frameWidth = frameWidth;
 	this->frameHeight = frameHeight;
@@ -24,28 +24,28 @@ FrameSender::FrameSender(int port, int frameWidth, int frameHeight) : activity(t
 	server.setVerbose(true); //NOTE: Remove when done testing
 }
 
-FrameSender::~FrameSender() {
+ofxKinectServer::~ofxKinectServer() {
     
 }
 
-void FrameSender::start() {
+void ofxKinectServer::start() {
 	activity.start();
 }
 
-void FrameSender::stop() {
+void ofxKinectServer::stop() {
 	activity.stop();
 }
 
-int FrameSender::getNumClients(){
+int ofxKinectServer::getNumClients(){
 	return server.getNumClients();
 }
 
 /**
 	Writes a new frame into the buffer frame that gets sent via TCP.
  */
-void FrameSender::setPixelsSrc(ofPixels &pixels) throw (length_error) {
+void ofxKinectServer::setPixelsSrc(ofPixels &pixels) throw (length_error) {
 	if (pixels.getWidth() > frameWidth || pixels.getHeight() > frameHeight) {
-		throw length_error("FrameSender::updateFrame: Frame size is bigger than the size of the buffer.");
+		throw length_error("ofxKinectServer::updateFrame: Frame size is bigger than the size of the buffer.");
 	}
 	
 	if (rwlock.tryWriteLock()) {
@@ -54,7 +54,7 @@ void FrameSender::setPixelsSrc(ofPixels &pixels) throw (length_error) {
 	}
 }
 
-void FrameSender::runActivity() {
+void ofxKinectServer::runActivity() {
 	while (!activity.isStopped()) {
 		
 		//only the first connected client will be considered: id=0

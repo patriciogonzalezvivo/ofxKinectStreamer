@@ -3,13 +3,18 @@
 	@author: Jan Christian Hjorth Hansen - rocknrolldk@gmail.com
  */
 
-#ifndef FRAMERECEIVER_H
-#define FRAMERECEIVER_H
+#ifndef OFXKINECTCLIENT
+#define OFXKINECTCLIENT
 
 #include <string>
 using std::string;
 
 #include "ofMain.h"
+
+//  Kinect stuff
+#include "ofxBase3DVideo.h"
+
+//  Streamming stuff
 #include "Poco/Activity.h"
 #include "Poco/RWLock.h"
 #include "ofxNetwork.h"
@@ -24,15 +29,15 @@ using std::string;
 #define RECEIVER_FRAME_WIDTH 640
 #define RECEIVER_FRAME_HEIGHT 480
 
-class FrameReceiver {
+class ofxKinectClient {
 public:
-	FrameReceiver();
-	FrameReceiver(string ip, int port, int frameWidth, int frameHeight);
-	~FrameReceiver();
+	ofxKinectClient();
+	ofxKinectClient(string ip, int port, int frameWidth, int frameHeight);
+	~ofxKinectClient();
 	
 	void start();
 	void stop();
-	bool estaConectado();
+	bool isConnected();
 	
 	/**
 		Writes into the received frame the pixels received over TCP.
@@ -40,7 +45,7 @@ public:
     void readFrame(ofTexture & texture);
 	
 private:
-	Poco::Activity<FrameReceiver> activity;
+	Poco::Activity<ofxKinectClient> activity;
 	Poco::RWLock rwlock;
 	
 	ofxTCPClient client;

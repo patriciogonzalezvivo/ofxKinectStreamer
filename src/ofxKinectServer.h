@@ -4,13 +4,17 @@
 	frame from a video which results in streaming simulation.
 	@author: Jan Christian Hjorth Hansen - rocknrolldk@gmail.com
  */
-#ifndef FRAMESENDER_H
-#define FRAMESENDER_H
+#ifndef OFXKINECTSERVER
+#define OFXKINECTSERVER
 
 #include <stdexcept>
 using std::length_error;
 
 #include "ofMain.h"
+
+//  Kinect stuff
+#include "libfreenect.h"
+
 #include "Poco/Activity.h"
 #include "Poco/RWLock.h"
 #include "ofxNetwork.h"
@@ -24,11 +28,11 @@ using std::length_error;
 #define SENDER_FRAME_WIDTH 640
 #define SENDER_FRAME_HEIGHT 480
 
-class FrameSender {
+class ofxKinectServer {
 public:
-	FrameSender();
-	FrameSender(int port, int frameWidth, int frameHeight);
-	~FrameSender();
+	ofxKinectServer();
+	ofxKinectServer(int port, int frameWidth, int frameHeight);
+	~ofxKinectServer();
     
     void setPixelsSrc(ofPixels & pixels) throw (length_error); 
 	void start();
@@ -39,7 +43,7 @@ public:
 
 private:	
     void runActivity(); //the main thread function
-	Poco::Activity<FrameSender> activity;
+	Poco::Activity<ofxKinectServer> activity;
 	Poco::RWLock rwlock;
 	
 	ofxTCPServer server;

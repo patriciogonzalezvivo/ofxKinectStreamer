@@ -3,17 +3,17 @@
 	@author: Jan Christian Hjorth Hansen - rocknrolldk@gmail.com
  */
 
-#include "FrameReceiver.h"
+#include "ofxKinectClient.h"
 
 #include <cstdio>
 using std::cout;
 using std::endl;
 
-FrameReceiver::FrameReceiver() : activity(this, &FrameReceiver::runActivity) {
-	FrameReceiver(DEFAULT_IP, DEFAULT_PORT, RECEIVER_FRAME_WIDTH, RECEIVER_FRAME_HEIGHT);
+ofxKinectClient::ofxKinectClient() : activity(this, &ofxKinectClient::runActivity) {
+	ofxKinectClient(DEFAULT_IP, DEFAULT_PORT, RECEIVER_FRAME_WIDTH, RECEIVER_FRAME_HEIGHT);
 }
 
-FrameReceiver::FrameReceiver(string ip, int port, int frameWidth, int frameHeight) : activity(this, &FrameReceiver::runActivity) {
+ofxKinectClient::ofxKinectClient(string ip, int port, int frameWidth, int frameHeight) : activity(this, &ofxKinectClient::runActivity) {
 	this->ip = ip;
 	this->port = port;
 	this->frameWidth = frameWidth;
@@ -30,21 +30,21 @@ FrameReceiver::FrameReceiver(string ip, int port, int frameWidth, int frameHeigh
 	cout << "Receiver initialized" << endl;
 }
 
-FrameReceiver::~FrameReceiver() {
+ofxKinectClient::~ofxKinectClient() {
 	delete [] pixels;
 }
 
-void FrameReceiver::start() {
+void ofxKinectClient::start() {
 	activity.start();
 }
 
-void FrameReceiver::stop() {
+void ofxKinectClient::stop() {
 	activity.stop();
 }
 
-void FrameReceiver::readFrame(ofTexture & texture) {
+void ofxKinectClient::readFrame(ofTexture & texture) {
 	if (texture.getWidth() < frameWidth || texture.getHeight() < frameHeight) {
-		throw length_error("FrameReceiver::readFrame: Frame size is bigger than the size of the buffer.");
+		throw length_error("ofxKinectClient::readFrame: Frame size is bigger than the size of the buffer.");
 	}
 	
 	if (rwlock.tryReadLock()) {
@@ -53,10 +53,10 @@ void FrameReceiver::readFrame(ofTexture & texture) {
 	}
 }
 
-bool FrameReceiver::estaConectado(){
+bool ofxKinectClient::isConnected(){
 	return client.isConnected();
 }
-void FrameReceiver::runActivity() {
+void ofxKinectClient::runActivity() {
 	while (!activity.isStopped()) {
 		if (client.isConnected()) {
             

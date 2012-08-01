@@ -9,6 +9,8 @@
 #ifndef example_server_ofxKinectStreamer_h
 #define example_server_ofxKinectStreamer_h
 
-
+#include "ofxBase3DVideo.h"
+#include "ofxKinectServer.h"
+#include "ofxKinectClient.h"
 
 #endif
