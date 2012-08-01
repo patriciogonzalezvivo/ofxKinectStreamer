@@ -4,9 +4,6 @@
 
 #include "ofxNetwork.h"
 #include "ofxGui.h"
-#include "ofxOsc.h"
-
-#define FAKEKINECT
 
 #include "ofxKinectStreamer.h"
 
@@ -27,25 +24,11 @@ public:
 	void exit();
 	
 private:
-    ofxKinectServer *frameSender;     //  needs to be a pointer as FrameSender 
-                                        //  uses POCO classes with private constructors, 
-                                        //  and then can't be copied
-    
-    ofxOscReceiver  oscReceiver;
-    
-#ifdef FAKEKINECT
-    ofVideoGrabber  grabber;
-#else
-    ofxKinect       kinect;
-#endif
-    
+    ofxKinectServer *sender;    //  needs to be a pointer as FrameSender 
+                                //  uses POCO classes with private constructors, 
+                                //  and then can't be copied
+
     ofxPanel        gui;
     ofxIntSlider    minDist;
     ofxIntSlider    maxDist;
-    
-    ofPixels    pixels;
-    ofShader    shader;
-    ofFbo       fbo;
-    
-    int width, height;
 };
