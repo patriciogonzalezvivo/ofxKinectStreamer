@@ -163,25 +163,33 @@ void ofxKinectServer::update(){
 void ofxKinectServer::runActivity() {    
 	while (!activity.isStopped()) {
 		//only the first connected client will be considered: id=0
-		if (server.isClientConnected(0)) {
-            
-			if (rwlock.tryReadLock()) {
+		//if (server.isClientConnected(0)) {
+		if(server.isConnected()){
+			for(int i = 0; i < server.getLastID(); i++){
+				if( !server.isClientConnected(i) )continue;
+			
 				
-				//Send frame by throttling, ie splitting frame up into chunks (rows) and sending them sequentially
-                
-				const char* index = (const char*)pixels.getPixels(); //start at beginning of pixel array
-				int length = pixels.getWidth() * 3;//length of one row of pixels in the image
-                int size = pixels.getHeight() * pixels.getWidth() * 3;
-                
-                int pixelCount = 0;
-                
-				while (pixelCount < size ) {
-					server.sendRawBytes(0, index, length); //send the first row of the image
-					index += length; //increase pointer so that it points to the next image row
-					pixelCount += length; //increase pixel count by one row
+				if (rwlock.tryReadLock()) {
+					
+					//Send frame by throttling, ie splitting frame up into chunks (rows) and sending them sequentially
+					
+					const char* index = (const char*)pixels.getPixels(); //start at beginning of pixel array
+					int length = pixels.getWidth() * 3;//length of one row of pixels in the image
+					int size = pixels.getHeight() * pixels.getWidth() * 3;
+					
+					int pixelCount = 0;
+					
+					while (pixelCount < size ) {
+						server.sendRawBytes(i, index, length); //send the first row of the image
+						//server.sendRawBytes(0, index, length); //send the first row of the image
+						index += length; //increase pointer so that it points to the next image row
+						pixelCount += length; //increase pixel count by one row
+					}
+					
+					rwlock.unlock();
 				}
 				
-				rwlock.unlock();
+				
 			}
 		} else {
 			//cout << "NOT" << endl;
