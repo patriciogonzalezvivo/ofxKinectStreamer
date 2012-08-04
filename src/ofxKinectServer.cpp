@@ -167,10 +167,8 @@ void ofxKinectServer::runActivity() {
 		if(server.isConnected()){
 			for(int i = 0; i < server.getLastID(); i++){
 				if( !server.isClientConnected(i) )continue;
-			
-				
+		
 				if (rwlock.tryReadLock()) {
-					
 					//Send frame by throttling, ie splitting frame up into chunks (rows) and sending them sequentially
 					
 					const char* index = (const char*)pixels.getPixels(); //start at beginning of pixel array
