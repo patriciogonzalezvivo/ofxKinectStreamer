@@ -46,6 +46,7 @@ public:
 	float   getDistanceAt(const ofPoint & p);
 	ofVec3f getWorldCoordinateAt(int cx, int cy);
 	ofVec3f getWorldCoordinateAt(float cx, float cy, float wz);
+	bool	isFrameNew();
     
     bool    isConnected(){return client.isConnected();};
     
@@ -55,6 +56,9 @@ public:
     void    update();
 	void    draw(int _x = 0, int _y = 0);
     
+	bool	connected;
+	bool	newFrame;
+	
 private:
     void runActivity(); //the main thread function
 	

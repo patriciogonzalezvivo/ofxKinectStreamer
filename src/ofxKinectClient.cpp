@@ -50,10 +50,13 @@ ofxKinectClient::ofxKinectClient(string _ip, int _port, int _width, int _height)
 	
 	cout << "try to initialize receiver" << endl;
 	
-	client.setup(ip, port, true);
+	connected = client.setup(ip, port, true);
 	client.setVerbose(true); // remove when done testing
     
 	cout << "Receiver initialized" << endl;
+	
+	newFrame = false;
+	
 }
 
 ofxKinectClient::~ofxKinectClient() {
@@ -61,7 +64,7 @@ ofxKinectClient::~ofxKinectClient() {
 }
 
 void ofxKinectClient::update() {
-    if (isConnected()){
+    if (isConnected() && isFrameNew()){
         
         if (rwlock.tryReadLock()) {
             texture.loadData((unsigned char*)pixels, width, height, GL_RGB);
@@ -114,7 +117,13 @@ ofVec3f ofxKinectClient::getWorldCoordinateAt(float cx, float cy, float wz) {
 	//freenect_camera_to_world(kinectDevice, cx, cy, wz, &wx, &wy);
 	return ofVec3f(wx, wy, wz);
 }
-
+bool ofxKinectClient::isFrameNew(){
+	if(newFrame){
+		newFrame = false;
+		return connected;
+	}
+	return false;
+}
 void ofxKinectClient::runActivity() {
 	while (!activity.isStopped()) {
 		if (client.isConnected()) {
@@ -130,7 +139,9 @@ void ofxKinectClient::runActivity() {
 					receivePos += receivedBytes;
 				}
 				
+				newFrame = true;
 				rwlock.unlock();
+				
 			}
 		}
 		else {
