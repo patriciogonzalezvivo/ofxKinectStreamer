@@ -96,9 +96,9 @@ float ofxKinectClient::getDistanceAt(int x, int y) {
 	//  TODO: take near and far points to map the ofFloatPixels 
     //  and send it back to the freenect_camera_to_world
     
-    //  return depthPixelsRaw[y * width + x];
+    return pixels[y * width + x];
     
-    return -1.0 ;
+    //return -1.0 ;
 }
 
 //------------------------------------
@@ -113,10 +113,29 @@ ofVec3f ofxKinectClient::getWorldCoordinateAt(int x, int y) {
 
 //------------------------------------
 ofVec3f ofxKinectClient::getWorldCoordinateAt(float cx, float cy, float wz) {
-	double wx, wy;
-	//freenect_camera_to_world(kinectDevice, cx, cy, wz, &wx, &wy);
-	return ofVec3f(wx, wy, wz);
+    /*
+    double ref_pix_size = dev->registration.zero_plane_info.reference_pixel_size;
+	double ref_distance = dev->registration.zero_plane_info.reference_distance;
+	double factor = 2 * ref_pix_size * wz / ref_distance;
+	*wx = (double)(cx - DEPTH_X_RES/2) * factor;
+	*wy = (double)(cy - DEPTH_Y_RES/2) * factor;
+     */
+
+    float XtoZ = 1.11146; // tan( 1.0144686 / 2.0 ) * 2.0;
+    float YtoZ = 0.83359; // tan( 0.7898090 / 2.0 ) * 2.0;
+    
+    float nearClipping = 500;
+    float farClipping = 4000;
+    
+    float z = (1.0 - wz);// * (farClipping - nearClipping) + nearClipping;
+    ofVec3f rta;
+    rta.x = -( cx / width - 0.5 ) * z * XtoZ;
+    rta.y = ( cy / height - 0.5 ) * z * YtoZ;
+    rta.z = z;// + zOffset;
+    
+	return rta;
 }
+
 bool ofxKinectClient::isFrameNew(){
 	if(newFrame){
 		newFrame = false;
@@ -124,6 +143,7 @@ bool ofxKinectClient::isFrameNew(){
 	}
 	return false;
 }
+
 void ofxKinectClient::runActivity() {
 	while (!activity.isStopped()) {
 		if (client.isConnected()) {

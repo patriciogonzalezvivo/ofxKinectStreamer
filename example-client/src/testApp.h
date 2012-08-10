@@ -10,6 +10,8 @@ public:
     void update();
     void draw();
 
+    void drawPointCloud();
+    
     void keyPressed  (int key);
     void keyReleased(int key);
     void mouseMoved(int x, int y );
@@ -23,5 +25,8 @@ private:
     int cam1ByteSize;
     int cam2ByteSize;
 	
-    ofxKinectClient* receiver;	
+    ofxKinectClient* receiver;
+    
+	// used for viewing the point cloud
+	ofEasyCam easyCam;
 };

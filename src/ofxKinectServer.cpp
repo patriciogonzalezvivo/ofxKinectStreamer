@@ -125,19 +125,22 @@ void ofxKinectServer::update(){
         ofSetColor(255);
         
         shader.begin();
-        shader.setUniformTexture("tex", kinect.getDepthTextureReference(), 0);
+        
+        kinect.getDepthTextureReference().bind();
+//        shader.setUniformTexture("tex", kinect.getDepthTextureReference(), 0);
         glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex3f(0, 0, 0);
-        glTexCoord2f(width, 0); glVertex3f(width, 0, 0);
-        glTexCoord2f(width, height); glVertex3f(width, height, 0);
-        glTexCoord2f(0,height);  glVertex3f(0,height, 0);
+        glTexCoord2f(width*2.0, 0); glVertex3f(width, 0, 0);
+        glTexCoord2f(width*2.0, height*2.0); glVertex3f(width, height, 0);
+        glTexCoord2f(0,height*2.0);  glVertex3f(0,height, 0);
         glEnd();
+        kinect.getDepthTextureReference().unbind();
+        
         shader.end();
         
         fbo.end();
         
         fbo.getTextureReference().readToPixels( pixels );
-        frameSender->updateFrame( pixels );
     }
     
     while(oscReceiver.hasWaitingMessages()){

@@ -8,7 +8,7 @@
 #ifndef OFXKINECTSERVER
 #define OFXKINECTSERVER
 
-#define FAKEKINECT
+//#define FAKEKINECT
 
 #include <stdexcept>
 using std::length_error;
@@ -67,6 +67,7 @@ private:
     ofVideoGrabber  grabber;
 #else
     ofxKinect       kinect;
+    int             minDist, maxDist;
 #endif
     
     ofxTCPServer    server;
